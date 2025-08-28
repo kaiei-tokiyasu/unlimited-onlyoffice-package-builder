@@ -215,10 +215,6 @@ build_oo_binaries() {
     build_tools
   # Ignore detached head warning
   cd build_tools
-
-  echo "debug-1"
-  echo ${_UPSTREAM_TAG}
-  ls -a
   
   mkdir ${_OUT_FOLDER}
   docker build --tag onlyoffice-document-editors-builder .
