@@ -218,7 +218,7 @@ build_oo_binaries() {
 
   echo "debug-1"
   echo ${_UPSTREAM_TAG}
-  echo ls -a
+  ls -a
   
   mkdir ${_OUT_FOLDER}
   docker build --tag onlyoffice-document-editors-builder .
