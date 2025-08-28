@@ -80,10 +80,10 @@ jobs:
           PRODUCT_VERSION: ${{ steps.get-product-version.outputs.product-version }}
         id: get-build-number
         run: echo "build-number=${VERSION##$PRODUCT_VERSION.}" >> $GITHUB_OUTPUT
-      - name: Docker build binaries
-        id: docker-build-binaries
-        run: |
-          sudo ./onlyoffice-package-builder.sh --product-version=${{ steps.get-product-version.outputs.product-version }} --build-number=${{ steps.get-build-number.outputs.build-number }} --unlimited-organization=${{ github.repository_owner }} --tag-suffix=${{ env.TAG_SUFFIX }} --debian-package-suffix=${{ env.DEBIAN_PACKAGE_SUFFIX }} --binaries-only
+      # - name: Docker build binaries
+      #   id: docker-build-binaries
+      #   run: |
+      #     sudo ./onlyoffice-package-builder.sh --product-version=${{ steps.get-product-version.outputs.product-version }} --build-number=${{ steps.get-build-number.outputs.build-number }} --unlimited-organization=${{ github.repository_owner }} --tag-suffix=${{ env.TAG_SUFFIX }} --debian-package-suffix=${{ env.DEBIAN_PACKAGE_SUFFIX }} --binaries-only
       - name: Docker prune all containers
         id: docker-prune-all-containers
         run: |
