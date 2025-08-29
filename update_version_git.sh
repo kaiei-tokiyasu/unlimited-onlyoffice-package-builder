@@ -46,6 +46,11 @@ function git_push {
 
 # Update build_tools repository
 git_operations "/root/onlyoffice_repos/build_tools" "$VERSION"
+#copy py3 to fix build
+
+git checkout master -- tools/linux/python3.tar.gz
+git add tools/linux/python3.tar.gz
+git commit -m 'fix-build'
 
 # Cherry-pick commit in build_tools
 git cherry-pick f88a3ba5470664888bbf150d67ef0b31f74a6cbb
@@ -57,7 +62,7 @@ git checkout --theirs configure.py
 git add configure.py
 
 git cherry-pick --continue
-#git commit --allow-empty
+git commit -m 'fix-conflict'
 
 # Update base.py with version-specific values
 sed -i "s/unlimited_organization = \"btactic-oo\"/unlimited_organization = \"kaiei-tokiyasu\"/g" scripts/base.py
@@ -102,13 +107,19 @@ git push origin main
 git pull main
 git fetch --all --tags
 
+nano onlyoffice-package-builder.sh
+
+git add onlyoffice-package-builder.sh
+
 # Create and push a new tag for the package builder
 PACKAGE_TAG="builds-debian-11/$VERSION"
 
-git branch -D $PACKAGE_TAG
+git commit -m "update custom commits sha $PACKAGE_TAG"
+
+#git branch -D $PACKAGE_TAG
 git tag -d $PACKAGE_TAG
 
-git push origin --delete "$PACKAGE_TAG"
+#git push origin --delete "$PACKAGE_TAG"
 git push --delete origin "$PACKAGE_TAG"
 
 git tag -a $PACKAGE_TAG -m "$PACKAGE_TAG"
