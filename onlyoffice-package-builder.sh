@@ -206,20 +206,28 @@ build_oo_binaries() {
 
   prepare_custom_repo "server" "${_UPSTREAM_TAG}" "${_UNLIMITED_ORGANIZATION}" ${SERVER_CUSTOM_COMMITS}
   prepare_custom_repo "web-apps" "${_UPSTREAM_TAG}" "${_UNLIMITED_ORGANIZATION}" ${WEB_APPS_CUSTOM_COMMITS}
+  
+  _GIT_CLONE_BRANCH="v${_PRODUCT_VERSION}.${_BUILD_NUMBER}${_TAG_SUFFIX}"
 
   git clone \
     --depth=1 \
     --recursive \
-    --branch ${_UPSTREAM_TAG} \
-    https://github.com/${UPSTREAM_ORGANIZATION}/build_tools.git \
+    --branch ${_GIT_CLONE_BRANCH} \
+    https://github.com/${_UNLIMITED_ORGANIZATION}/build_tools.git \
     build_tools
   # Ignore detached head warning
   cd build_tools
   mkdir ${_OUT_FOLDER}
   docker build --tag onlyoffice-document-editors-builder .
-  docker run -e PRODUCT_VERSION=${_PRODUCT_VERSION} -e BUILD_NUMBER=${_BUILD_NUMBER} -e NODE_ENV='production' -v $(pwd)/${_OUT_FOLDER}:/build_tools/out -v $(pwd)/../server:/server -v $(pwd)/../web-apps:/web-apps onlyoffice-document-editors-builder /bin/bash -c '\
-    cd tools/linux && \
-    python3 ./automate.py --branch=tags/'"${_UPSTREAM_TAG}"
+  
+  docker run -e PRODUCT_VERSION=${_PRODUCT_VERSION} \
+  -e BUILD_NUMBER=${_BUILD_NUMBER} \
+  -e NODE_ENV='production' \
+  -v $(pwd)/${_OUT_FOLDER}:/build_tools/out \
+  -v $(pwd)/../server:/server \
+  -v $(pwd)/../web-apps:/web-apps \
+  onlyoffice-document-editors-builder /bin/bash -c \
+  'cd tools/linux && python3 ./automate.py --branch=tags/'"${_GIT_CLONE_BRANCH}"
   cd ..
 
 }
