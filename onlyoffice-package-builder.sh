@@ -40,11 +40,6 @@ EOF
 BINARIES_ONLY="false"
 DEB_ONLY="false"
 
-UPSTREAM_ORGANIZATION="ONLYOFFICE"
-
-SERVER_CUSTOM_COMMITS="ceb0952226a31e007a39c57eaa7ef89e3b202c8d"
-WEB_APPS_CUSTOM_COMMITS="4be13217cf993c260872bd943c0d499096a07de9"
-
 # Check the arguments.
 for option in "$@"; do
   case "$option" in
@@ -78,11 +73,6 @@ done
 
 BUILD_BINARIES="true"
 BUILD_DEB="true"
-
-if [ "$EUID" -ne 0 ]
-  then echo "Please run as root"
-  exit 1
-fi
 
 if [ ${BINARIES_ONLY} == "true" ] ; then
   BUILD_BINARIES="true"
@@ -156,43 +146,6 @@ EOF
   fi
 fi
 
-prepare_custom_repo() {
-
-  _REPO=$1
-  shift
-  _TAG=$1
-  shift
-  _UNLIMITED_ORGANIZATION=$1
-  shift
-  # Rest of arguments are commits to cherry-pick in order
-
-  git clone https://github.com/${_UNLIMITED_ORGANIZATION}/${_REPO}
-  cd ${_REPO}
-  git remote add upstream-origin https://github.com/${UPSTREAM_ORGANIZATION}/${_REPO}
-
-  git checkout master
-  git pull upstream-origin master
-  git fetch --all --tags
-  git checkout tags/${_TAG} -b ${_TAG}-custom
-
-  while [ "$#" -gt 0 ]; do
-    _ncommit=$1
-    if ! git cherry-pick "${_ncommit}"; then
-      echo "Error: cherry-pick of commit ${_ncommit} failed in ${_REPO}" >&2
-      echo "Aborting!"
-      exit 3
-    fi
-    shift
-  done
-
-  # Force our changes
-  git tag --delete ${_TAG}
-  git tag -a "${_TAG}" -m "${_TAG}"
-
-  cd ..
-
-}
-
 build_oo_binaries() {
 
   _OUT_FOLDER=$1 # out
@@ -201,26 +154,19 @@ build_oo_binaries() {
   _TAG_SUFFIX=$4 # -btactic
   _UNLIMITED_ORGANIZATION=$5 # btactic-oo
 
-  _UPSTREAM_TAG="v${_PRODUCT_VERSION}.${_BUILD_NUMBER}"
-  _UNLIMITED_ORGANIZATION_TAG="${_UPSTREAM_TAG}${_TAG_SUFFIX}"
-
-  prepare_custom_repo "server" "${_UPSTREAM_TAG}" "${_UNLIMITED_ORGANIZATION}" ${SERVER_CUSTOM_COMMITS}
-  prepare_custom_repo "web-apps" "${_UPSTREAM_TAG}" "${_UNLIMITED_ORGANIZATION}" ${WEB_APPS_CUSTOM_COMMITS}
+  _GIT_CLONE_BRANCH="v${_PRODUCT_VERSION}.${_BUILD_NUMBER}${_TAG_SUFFIX}"
 
   git clone \
     --depth=1 \
     --recursive \
-    --branch ${_UPSTREAM_TAG} \
-    https://github.com/${UPSTREAM_ORGANIZATION}/build_tools.git \
+    --branch ${_GIT_CLONE_BRANCH} \
+    https://github.com/${_UNLIMITED_ORGANIZATION}/build_tools.git \
     build_tools
   # Ignore detached head warning
   cd build_tools
-  
   mkdir ${_OUT_FOLDER}
   docker build --tag onlyoffice-document-editors-builder .
-  docker run -e PRODUCT_VERSION=${_PRODUCT_VERSION} -e BUILD_NUMBER=${_BUILD_NUMBER} -e NODE_ENV='production' -v $(pwd)/${_OUT_FOLDER}:/build_tools/out -v $(pwd)/../server:/server -v $(pwd)/../web-apps:/web-apps onlyoffice-document-editors-builder /bin/bash -c '\
-    cd tools/linux && \
-    python3 ./automate.py --branch=tags/'"${_UPSTREAM_TAG}"
+  docker run -e PRODUCT_VERSION=${_PRODUCT_VERSION} -e BUILD_NUMBER=${_BUILD_NUMBER} -e NODE_ENV='production' -v $(pwd)/${_OUT_FOLDER}:/build_tools/out onlyoffice-document-editors-builder /bin/bash -c 'cd tools/linux && python3 ./automate.py --branch=tags/'"${_GIT_CLONE_BRANCH}"
   cd ..
 
 }
