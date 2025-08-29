@@ -42,8 +42,8 @@ DEB_ONLY="false"
 
 UPSTREAM_ORGANIZATION="ONLYOFFICE"
 
-SERVER_CUSTOM_COMMITS="81db34dee17f8a6a364669232a8c7c2f5d36d81f"
-WEB_APPS_CUSTOM_COMMITS="140ef6d1d687532dcb03b05912838b8b4cf161a3"
+SERVER_CUSTOM_COMMITS="2b57a338129b4105a1e3432951bc60d889a66e48"
+WEB_APPS_CUSTOM_COMMITS="026b609eed389c8cf567668791f04d9ac34c6208"
 
 # Check the arguments.
 for option in "$@"; do
@@ -255,7 +255,7 @@ if [ "${BUILD_DEB}" == "true" ] ; then
       --env DEBIAN_PACKAGE_SUFFIX=${DEBIAN_PACKAGE_SUFFIX} \
       -v $(pwd):/usr/local/unlimited-onlyoffice-package-builder:ro \
       -v $(pwd):/root:rw \
-      -v $(pwd)/../build_tools:/root/build_tools:ro \
+      -v $(pwd)/../build_tools:/root/build_tools:rw \
       onlyoffice-deb-builder /bin/bash -c "/usr/local/unlimited-onlyoffice-package-builder/onlyoffice-deb-builder.sh --product-version ${PRODUCT_VERSION} --build-number ${BUILD_NUMBER} --tag-suffix ${TAG_SUFFIX} --unlimited-organization ${UNLIMITED_ORGANIZATION} --debian-package-suffix ${DEBIAN_PACKAGE_SUFFIX}"
     cd ..
   else
