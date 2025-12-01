@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#######################################################################
+B#######################################################################
 # OnlyOffice Package Builder
 
 # Copyright (C) 2024 BTACTIC, SCCL
@@ -37,13 +37,13 @@ EOF
 
 }
 
-BBINARIES_ONLY="false"
+BINARIES_ONLY="false"
 DEB_ONLY="false"
 
 UPSTREAM_ORGANIZATION="ONLYOFFICE"
 
-SERVER_CUSTOM_COMMITS="cd432558e9d7789954a1ba44ed50c6e6516153ac"
-WEB_APPS_CUSTOM_COMMITS="1e4f024b97e7cca05bc21153d8ca2d5f2ef2c8da"
+SERVER_CUSTOM_COMMITS="3eca422e921f3868e47dabcb8cb1d15e7ac59410"
+WEB_APPS_CUSTOM_COMMITS="754e51957a6048dcba47f6c6d0777fa43b5af599"
 
 # Check the arguments.
 for option in "$@"; do
