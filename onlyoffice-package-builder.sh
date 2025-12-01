@@ -42,8 +42,8 @@ DEB_ONLY="false"
 
 UPSTREAM_ORGANIZATION="ONLYOFFICE"
 
-SERVER_CUSTOM_COMMITS="3eca422e921f3868e47dabcb8cb1d15e7ac59410"
-WEB_APPS_CUSTOM_COMMITS="754e51957a6048dcba47f6c6d0777fa43b5af599"
+SERVER_CUSTOM_COMMITS="c11113475a8ee02c57bbd73216cf4d3800ec18c0"
+WEB_APPS_CUSTOM_COMMITS="2664e64ac6f55e8fd04a71dab41abc452422cf2d"
 
 # Check the arguments.
 for option in "$@"; do
@@ -67,7 +67,7 @@ for option in "$@"; do
     --debian-package-suffix=*)
       DEBIAN_PACKAGE_SUFFIX=`echo "$option" | sed 's/--debian-package-suffix=//'`
     ;;
-B    --binaries-only)
+    --binaries-only)
       BINARIES_ONLY="true"
     ;;
     --deb-only)
